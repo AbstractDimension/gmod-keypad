@@ -52,7 +52,14 @@ function ENT:Process( granted )
 
     if granted then
         self:SetStatus( self.Status_Granted )
-        length = self.KeypadData.LengthGranted
+
+        local minimumLenght = GetConVar( "keypad_minimum_granted_hold_lenght" ):GetFloat()
+        if minimumLenght > self.KeypadData.LengthGranted then
+            length = self.KeypadData.LengthGranted
+        else
+            length = minimumLenght
+        end
+
         repeats = math.min( self.KeypadData.RepeatsGranted, 50 )
         delay = self.KeypadData.DelayGranted
         initdelay = self.KeypadData.InitDelayGranted
@@ -76,20 +83,17 @@ function ENT:Process( granted )
     end )
 
     timer.Simple( initdelay, function()
-        if IsValid( self ) then
-            for i = 0, repeats do
-                timer.Simple( length * i + delay * i, function()
-                    if IsValid( self ) and IsValid( owner ) then
-                        numpad.Activate( owner, key, true )
-                    end
-                end )
+        if not IsValid( self ) then return end
+        for i = 0, repeats do
+            timer.Simple( length * i + delay * i, function()
+                if not IsValid( self ) or not IsValid( owner ) then return end
+                numpad.Activate( owner, key, true )
+            end )
 
-                timer.Simple( length * ( i + 1 ) + delay * i, function()
-                    if IsValid( self ) and IsValid( owner ) then
-                        numpad.Deactivate( owner, key, true )
-                    end
-                end )
-            end
+            timer.Simple( length * ( i + 1 ) + delay * i, function()
+                if not IsValid( self ) or not IsValid( owner ) then return end
+                numpad.Deactivate( owner, key, true )
+            end )
         end
     end )
 

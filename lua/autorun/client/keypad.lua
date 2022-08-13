@@ -1,3 +1,5 @@
+CreateConVar( "keypad_minimum_granted_hold_lenght", 5, { FCVAR_ARCHIVE }, "Minimum time a keypad will stay open when its opened.", 0 )
+
 hook.Add( "PlayerBindPress", "Keypad", function( ply, bind, pressed )
     if not pressed then return end
 
