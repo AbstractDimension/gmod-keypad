@@ -52,7 +52,7 @@ function ENT:Process( granted )
 
     if granted then
         self:SetStatus( self.Status_Granted )
-        length = math.max( self.KeypadData.LengthGranted, GetConVar( "keypad_mini_granted_hold_lenght" ):GetFloat() )
+        length = math.max( self.KeypadData.LengthGranted, GetConVar( "keypad_min_granted_hold_lenght" ):GetFloat() )
         initdelay = math.min( self.KeypadData.InitDelayGranted, GetConVar( "keypad_max_granted_initial_lenght" ):GetFloat() )
         repeats = math.min( self.KeypadData.RepeatsGranted, 50 )
         delay = self.KeypadData.DelayGranted
