@@ -52,17 +52,10 @@ function ENT:Process( granted )
 
     if granted then
         self:SetStatus( self.Status_Granted )
-
-        local minimumLenght = GetConVar( "keypad_minimum_granted_hold_lenght" ):GetFloat()
-        if minimumLenght > self.KeypadData.LengthGranted then
-            length = self.KeypadData.LengthGranted
-        else
-            length = minimumLenght
-        end
-
+        length = math.max( self.KeypadData.LengthGranted, GetConVar( "keypad_mini_granted_hold_lenght" ):GetFloat() )
+        initdelay = math.min( self.KeypadData.InitDelayGranted, GetConVar( "keypad_max_granted_initial_lenght" ):GetFloat() )
         repeats = math.min( self.KeypadData.RepeatsGranted, 50 )
         delay = self.KeypadData.DelayGranted
-        initdelay = self.KeypadData.InitDelayGranted
         outputKey = "Access Granted"
     else
         self:SetStatus( self.Status_Denied )
