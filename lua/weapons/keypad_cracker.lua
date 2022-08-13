@@ -199,8 +199,7 @@ if CLIENT then
 
             local frac = math.Clamp( ( CurTime() - self.StartCrack ) / ( self.EndCrack - self.StartCrack ), 0, 1 ) -- Between 0 and 1 (a fraction omg segregation)
             local dots = self.Dots or ""
-            local w, h = ScrW(), ScrH()
-            local x, y = w / 2 - 150, h / 2 - 25
+            local x, y = ScrW() / 2 - 150, ScrH() / 2 - 25
             local w, h = 300, 50
             draw.RoundedBox( 4, x, y, w, h, self.BoxColor )
             surface.SetDrawColor( Color( 255 + frac * -255, frac * 255, 40 ) )

@@ -33,10 +33,10 @@ local COLOR_RED = Color( 255, 0, 0 )
 
 local function DrawLines( lines, x, y )
     local text = table.concat( lines, "\n" )
-    local total_w, total_h = surface.GetTextSize( text )
+    local _, total_h = surface.GetTextSize( text )
     local y_off = 0
 
-    for k, v in ipairs( lines ) do
+    for _, v in ipairs( lines ) do
         local w, h = surface.GetTextSize( v )
         surface.SetTextPos( x - w / 2, y - total_h / 2 + y_off )
         surface.DrawText( v )

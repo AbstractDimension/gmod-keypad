@@ -139,6 +139,6 @@ function ENT:Reset()
     Wire_TriggerOutput( self, "Access Denied", self.KeypadData.OutputOff )
 end
 
-duplicator.RegisterEntityModifier( "keypad_wire_password_passthrough", function( ply, entity, data )
+duplicator.RegisterEntityModifier( "keypad_wire_password_passthrough", function( _, entity, data )
     entity:SetData( data )
 end )

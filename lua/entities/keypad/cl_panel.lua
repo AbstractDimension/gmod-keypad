@@ -133,10 +133,10 @@ do
     end
 end
 
-function ENT:Paint( w, h, x, y )
+function ENT:Paint( w, h )
     local hovered = self:GetHoveredElement()
 
-    for k, element in ipairs( elements ) do
+    for _, element in ipairs( elements ) do
         surface.SetDrawColor( element.color )
         local element_x = w * element.x
         local element_y = h * element.y

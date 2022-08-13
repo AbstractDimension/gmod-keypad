@@ -41,7 +41,7 @@ end
 local last_press = 0
 local enter_strict = CreateConVar( "keypad_willox_enter_strict", "0", FCVAR_ARCHIVE, "Only allow the numpad's enter key to be used to accept keypads' input" )
 
-hook.Add( "CreateMove", "Keypad", function( cmd )
+hook.Add( "CreateMove", "Keypad", function()
     if RealTime() - 0.1 < last_press then return end
 
     for key, handler in pairs( physical_keypad_commands ) do

@@ -44,7 +44,7 @@ function TOOL:SetupKeypad( ent, pass )
         InitDelayDenied = self:GetClientNumber( "init_delay_denied" ),
         OutputOn = self:GetClientNumber( "output_on" ),
         OutputOff = self:GetClientNumber( "output_off" ),
-        Secure = util.tobool( self:GetClientNumber( "secure" ) )
+        Secure = tobool( self:GetClientNumber( "secure" ) )
     }
 
     ent:SetData( data )
@@ -52,7 +52,7 @@ end
 
 function TOOL:RightClick( tr )
     if not WireLib then return false end
-    if not IsValid( tr.Entity ) or not tr.Entity:GetClass():lower() == "keypad_wire" then return false end
+    if not IsValid( tr.Entity ) or tr.Entity:GetClass():lower() ~= "keypad_wire" then return false end
     if CLIENT then return true end
     local ply = self:GetOwner()
     local password = tonumber( ply:GetInfo( "keypad_willox_wire_password" ) )
@@ -138,7 +138,7 @@ if CLIENT then
             CPanel:Help( "http://wiremod.com/" )
             CPanel:Help( "Workshop Addon #160250458" )
         else
-            local r, l = CPanel:TextEntry( "Access Password", "keypad_willox_wire_password" )
+            local r = CPanel:TextEntry( "Access Password", "keypad_willox_wire_password" )
             r:SetTall( 22 )
             CPanel:ControlHelp( "Max Length: 4\nAllowed Digits: 1-9" )
             CPanel:CheckBox( "Secure Mode", "keypad_willox_wire_secure" )
