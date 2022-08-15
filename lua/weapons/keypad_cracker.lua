@@ -1,7 +1,7 @@
 -- This is sorta horrible
 AddCSLuaFile()
 
-local keypad_crack_time = CreateConVar( "keypad_crack_time", "30", { FCVAR_ARCHIVE }, "Seconds for keypad cracker to crack keypad" )
+local keypad_crack_time = CreateConVar( "keypad_crack_time", "20", { FCVAR_ARCHIVE }, "Seconds for keypad cracker to crack keypad" )
 
 if SERVER then
     util.AddNetworkString( "KeypadCracker_Hold" )
@@ -16,11 +16,11 @@ if CLIENT then
     SWEP.DrawCrosshair = true
 end
 
-SWEP.Author = "Willox"
-SWEP.Instructions = "Left click to crack keypad"
+-- SWEP.Author = "Willox" removed for consistency with other SWEP, but credit is still here.
+SWEP.Instructions = "Hold up to Keypad."
 SWEP.Contact = ""
-SWEP.Purpose = ""
-SWEP.ViewModelFOV = 62
+SWEP.Purpose = "Handheld Keypad Cracker tool used to force entry into player bases."
+SWEP.ViewModelFOV = 65
 SWEP.ViewModelFlip = false
 SWEP.ViewModel = Model( "models/weapons/v_c4.mdl" )
 SWEP.WorldModel = Model( "models/weapons/w_c4.mdl" )
