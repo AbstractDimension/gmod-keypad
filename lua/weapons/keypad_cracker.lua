@@ -20,22 +20,23 @@ end
 SWEP.Instructions = "Hold up to Keypad."
 SWEP.Contact = ""
 SWEP.Purpose = "Handheld Keypad Cracker tool used to force entry into player bases."
+SWEP.Category = "Raid Tools"
 SWEP.ViewModelFOV = 65
 SWEP.ViewModelFlip = false
 SWEP.ViewModel = Model( "models/weapons/v_c4.mdl" )
 SWEP.WorldModel = Model( "models/weapons/w_c4.mdl" )
 SWEP.Spawnable = true
-SWEP.AdminOnly = true
+SWEP.AdminOnly = false
 SWEP.AnimPrefix = "python"
 SWEP.Sound = Sound( "weapons/deagle/deagle-1.wav" )
 SWEP.Primary.ClipSize = -1
-SWEP.Primary.DefaultClip = 0
+SWEP.Primary.DefaultClip = -1
 SWEP.Primary.Automatic = false
-SWEP.Primary.Ammo = ""
+SWEP.Primary.Ammo = "none"
 SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Automatic = false
-SWEP.Secondary.Ammo = ""
+SWEP.Secondary.Ammo = "none"
 SWEP.KeyCrackSound = Sound( "buttons/blip2.wav" )
 SWEP.IdleStance = "slam"
 
