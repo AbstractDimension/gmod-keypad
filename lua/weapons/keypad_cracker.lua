@@ -25,7 +25,6 @@ SWEP.ViewModelFOV = 65
 SWEP.ViewModelFlip = false
 SWEP.ViewModel = Model( "models/weapons/v_c4.mdl" )
 SWEP.WorldModel = Model( "models/weapons/w_c4.mdl" )
-SWEP.IconOverride = "materials/entties/keypad_cracker.png"
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 SWEP.AnimPrefix = "python"
