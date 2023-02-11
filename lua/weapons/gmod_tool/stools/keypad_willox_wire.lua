@@ -146,7 +146,6 @@ if CLIENT then
             CPanel:CheckBox( "Freeze", "keypad_willox_wire_freeze" )
             CPanel:NumSlider( "Output On:", "keypad_willox_wire_output_on", -10, 10, 0 )
             CPanel:NumSlider( "Output Off:", "keypad_willox_wire_output_off", -10, 10, 0 )
-
             local granted = vgui.Create( "DForm" )
             granted:SetName( "Access Granted Settings" )
             granted:NumSlider( "Hold Length", "keypad_willox_wire_length_granted", 0.1, 10, 2 )
@@ -154,7 +153,6 @@ if CLIENT then
             granted:NumSlider( "Multiple Press Delay", "keypad_willox_wire_delay_granted", 0, 10, 2 )
             granted:NumSlider( "Additional Repeats", "keypad_willox_wire_repeats_granted", 0, 5, 0 )
             CPanel:AddItem( granted )
-
             local denied = vgui.Create( "DForm" )
             denied:SetName( "Access Denied Settings" )
             denied:NumSlider( "Hold Length", "keypad_willox_wire_length_denied", 0.1, 10, 2 )
@@ -164,7 +162,6 @@ if CLIENT then
             CPanel:AddItem( denied )
             CPanel:Button( "Default Settings", "keypad_willox_wire_reset" )
             CPanel:Help( "" )
-
             local faq = CPanel:Help( "Information" )
             faq:SetFont( "GModWorldtip" )
             CPanel:Help( "You can enter your password with your numpad when numlock is enabled!" )

@@ -13,7 +13,6 @@ function ENT:Draw()
     local pos, ang = self:CalculateRenderPos(), self:CalculateRenderAng()
     local w, h = self.Width2D, self.Height2D
     local x, y = self:CalculateCursorPos()
-
     cam.Start3D2D( pos, ang, self.Scale )
     self:Paint( w, h, x, y )
     cam.End3D2D()

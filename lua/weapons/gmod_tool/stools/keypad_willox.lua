@@ -138,14 +138,12 @@ if CLIENT then
         CPanel:CheckBox( "Secure Mode", "keypad_willox_secure" )
         CPanel:CheckBox( "Weld", "keypad_willox_weld" )
         CPanel:CheckBox( "Freeze", "keypad_willox_freeze" )
-
         local ctrl = vgui.Create( "CtrlNumPad", CPanel )
         ctrl:SetConVar1( "keypad_willox_key_granted" )
         ctrl:SetConVar2( "Keypad_willox_key_denied" )
         ctrl:SetLabel1( "Access Granted Key" )
         ctrl:SetLabel2( "Access Denied Key" )
         CPanel:AddPanel( ctrl )
-
         local granted = vgui.Create( "DForm" )
         granted:SetName( "Access Granted Settings" )
         granted:NumSlider( "Hold Length:", "keypad_willox_length_granted", 0.1, 10, 2 )
@@ -153,7 +151,6 @@ if CLIENT then
         granted:NumSlider( "Multiple Press Delay:", "keypad_willox_delay_granted", 0, 10, 2 )
         granted:NumSlider( "Additional Repeats:", "keypad_willox_repeats_granted", 0, 5, 0 )
         CPanel:AddItem( granted )
-
         local denied = vgui.Create( "DForm" )
         denied:SetName( "Access Denied Settings" )
         denied:NumSlider( "Hold Length:", "keypad_willox_length_denied", 0.1, 10, 2 )
@@ -163,7 +160,6 @@ if CLIENT then
         CPanel:AddItem( denied )
         CPanel:Button( "Default Settings", "keypad_willox_reset" )
         CPanel:Help( "" )
-
         local faq = CPanel:Help( "Information" )
         faq:SetFont( "GModWorldtip" )
         CPanel:Help( "You can enter your password with your numpad when numlock is enabled!" )
