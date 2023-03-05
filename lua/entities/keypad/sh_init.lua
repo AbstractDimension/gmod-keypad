@@ -42,6 +42,6 @@ end
 
 function ENT:SetupDataTables()
     self:NetworkVar( "String", 0, "Text" )
-    self:NetworkVar( "Int", 0, "Status" )
+    self:NetworkVar( "Int", 0, "KeypadStatus" )
     self:NetworkVar( "Bool", 0, "Secure" )
 end
