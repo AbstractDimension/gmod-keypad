@@ -52,7 +52,7 @@ local elements = {
         h = 0.25,
         color = Color( 50, 75, 50, 255 ),
         render = function( self, x, y )
-            local status = self:GetStatus()
+            local status = self:GetKeypadStatus()
 
             if status == self.Status_None then
                 surface.SetFont( "KeypadEntry" )

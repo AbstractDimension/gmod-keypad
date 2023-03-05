@@ -8,7 +8,7 @@ util.AddNetworkString( "Keypad_Wire" )
 net.Receive( "Keypad_Wire", function( _, ply )
     local ent = net.ReadEntity()
     if not IsValid( ply ) or not IsValid( ent ) or ent:GetClass():lower() ~= "keypad_wire" then return end
-    if ent:GetStatus() ~= ent.Status_None then return end
+    if ent:GetKeypadStatus() ~= ent.Status_None then return end
     if ply:EyePos():Distance( ent:GetPos() ) >= 120 then return end
     if ent.Next_Command_Time and ent.Next_Command_Time > CurTime() then return end
     ent.Next_Command_Time = CurTime() + 0.05
@@ -51,14 +51,14 @@ function ENT:Process( granted )
     local length, repeats, delay, initdelay, outputKey
 
     if granted then
-        self:SetStatus( self.Status_Granted )
+        self:SetKeypadStatus( self.Status_Granted )
         length = math.max( self.KeypadData.LengthGranted, GetConVar( "keypad_min_granted_hold_lenght" ):GetFloat() )
         initdelay = math.min( self.KeypadData.InitDelayGranted, GetConVar( "keypad_max_granted_initial_lenght" ):GetFloat() )
         repeats = math.min( self.KeypadData.RepeatsGranted, 50 )
         delay = self.KeypadData.DelayGranted
         outputKey = "Access Granted"
     else
-        self:SetStatus( self.Status_Denied )
+        self:SetKeypadStatus( self.Status_Denied )
         length = self.KeypadData.LengthDenied
         repeats = math.min( self.KeypadData.RepeatsDenied, 50 )
         delay = self.KeypadData.DelayDenied
@@ -133,7 +133,7 @@ end
 function ENT:Reset()
     self:GetData()
     self:SetValue( "" )
-    self:SetStatus( self.Status_None )
+    self:SetKeypadStatus( self.Status_None )
     self:SetSecure( self.KeypadData.Secure )
     Wire_TriggerOutput( self, "Access Granted", self.KeypadData.OutputOff )
     Wire_TriggerOutput( self, "Access Denied", self.KeypadData.OutputOff )
