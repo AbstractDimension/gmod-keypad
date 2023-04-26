@@ -22,7 +22,7 @@ function ENT:Draw()
     local w, h = entTable.Width2D, entTable.Height2D
     local x, y = self:CalculateCursorPos()
 
-    cam_Start3D2D( pos, ang, self.Scale )
+    cam_Start3D2D( pos, ang, entTable.Scale )
     self:Paint( w, h, x, y )
     cam_End3D2D()
 end
