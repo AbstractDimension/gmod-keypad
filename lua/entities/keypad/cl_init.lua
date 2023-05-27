@@ -7,6 +7,7 @@ local render_DrawBox = render.DrawBox
 local cam_Start3D2D = cam.Start3D2D
 local color_white = color_white
 local cam_End3D2D = cam.End3D2D
+local LocalPlayer = LocalPlayer
 
 local mat = CreateMaterial( "willox_keypad_material", "VertexLitGeneric", {
     ["$basetexture"] = "white",
@@ -15,9 +16,13 @@ local mat = CreateMaterial( "willox_keypad_material", "VertexLitGeneric", {
 
 function ENT:Draw()
     local entTable = self:GetTable()
+    local selfPos = self:GetPos()
 
     render_SetMaterial( mat )
-    render_DrawBox( self:GetPos(), self:GetAngles(), entTable.Mins, entTable.Maxs, color_white, true )
+    render_DrawBox( selfPos, self:GetAngles(), entTable.Mins, entTable.Maxs, color_white, true )
+
+    if selfPos:DistToSqr( LocalPlayer():GetPos() ) > 262144 then return end
+
     local pos, ang = self:CalculateRenderPos(), self:CalculateRenderAng()
     local w, h = entTable.Width2D, entTable.Height2D
     local x, y = self:CalculateCursorPos()
