@@ -21,10 +21,10 @@ SWEP.Instructions = "Hold up to Keypad."
 SWEP.Contact = ""
 SWEP.Purpose = "Handheld Keypad Cracker tool used to force entry into player bases."
 SWEP.Category = "Raid Tools"
-swep.UseHands = true
+SWEP.UseHands = true
 SWEP.ViewModelFOV = 65
 SWEP.ViewModelFlip = false
-swep.ViewModel = Model( "models/weapons/cstrike/c_c4.mdl" )
+SWEP.ViewModel = Model( "models/weapons/cstrike/c_c4.mdl" )
 SWEP.WorldModel = Model( "models/weapons/w_c4.mdl" )
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
@@ -184,38 +184,68 @@ function SWEP:Think()
 end
 
 if CLIENT then
-    SWEP.BoxColor = Color( 10, 10, 10, 100 )
+    SWEP.BoxColor = Color( 10, 10, 10, 200 )
 
     surface.CreateFont( "KeypadCrack", {
         font = "Trebuchet",
-        size = 18,
+        size = 100,
         weight = 600,
     } )
 
-    function SWEP:DrawHUD()
-        if self.IsCracking then
-            if not self.StartCrack then
-                self.StartCrack = CurTime()
-                self.EndCrack = CurTime() + self:GetCrackTime()
-            end
+    surface.CreateFont( "KeypadCrackNumbers", {
+        font = "Trebuchet",
+        size = 80,
+        weight = 600,
+    } )
 
-            local frac = math.Clamp( ( CurTime() - self.StartCrack ) / ( self.EndCrack - self.StartCrack ), 0, 1 ) -- Between 0 and 1 (a fraction omg segregation)
-            local dots = self.Dots or ""
-            local x, y = ScrW() / 2 - 150, ScrH() / 2 - 25
-            local w, h = 300, 50
-            draw.RoundedBox( 4, x, y, w, h, self.BoxColor )
-            surface.SetDrawColor( Color( 255 + frac * -255, frac * 255, 40 ) )
-            surface.DrawRect( x + 5, y + 5, frac * ( w - 10 ), h - 10 )
-            surface.SetFont( "KeypadCrack" )
-            local fontw, fonth = surface.GetTextSize( "Cracking" )
-            local fontx, fonty = ( x + w / 2 ) - fontw / 2, ( y + h / 2 ) - fonth / 2
-            surface.SetTextPos( fontx + 1, fonty + 1 )
-            surface.SetTextColor( color_black )
-            surface.DrawText( "Cracking" .. dots )
-            surface.SetTextPos( fontx, fonty )
-            surface.SetTextColor( color_white )
-            surface.DrawText( "Cracking" .. dots )
+    function SWEP:PostDrawViewModel( vm )
+        if not self.IsCracking then return end
+        if not self.StartCrack then
+            self.StartCrack = CurTime()
+            self.EndCrack = CurTime() + self:GetCrackTime()
         end
+
+        if not IsValid( vm ) then return end
+
+        local bone = vm:LookupBone( "v_weapon.c4" )
+        if not bone then return end
+
+        local pos, ang = vm:GetBonePosition( bone )
+        if not pos then return end
+
+        ang:RotateAroundAxis( ang:Right(), 180 )
+        ang:RotateAroundAxis( ang:Forward(), -90 )
+        cam.Start3D2D( pos - ang:Right() * 0.75 + ang:Up() * 4 + ang:Forward() * 4.33, ang, 0.005 )
+
+        local frac = math.Clamp( ( CurTime() - self.StartCrack ) / ( self.EndCrack - self.StartCrack ), 0, 1 ) -- Between 0 and 1 (a fraction omg segregation)
+        local dots = self.Dots or ""
+        local x, y = -330, 25
+        local w, h = 680, 100
+        draw.RoundedBox( 4, x, y, w, h, self.BoxColor )
+        surface.SetDrawColor( Color( 255 + frac * -255, frac * 255, 40 ) )
+        surface.DrawRect( x + 5, y + 5, frac * ( w - 10 ), h - 10 )
+        surface.SetFont( "KeypadCrack" )
+
+        local fontw, fonth = surface.GetTextSize( "Cracking" )
+        local fontx, fonty = ( x + w / 2 ) - fontw / 2, ( y + h / 2 ) - fonth / 2
+
+        surface.SetTextPos( fontx, fonty - 120 )
+        surface.SetTextColor( color_black )
+        surface.DrawText( "Cracking" .. dots )
+        surface.SetTextPos( fontx, fonty - 120 )
+        surface.SetTextColor( color_white )
+        surface.DrawText( "Cracking" .. dots )
+
+        local timeLeft = math.Round( self.EndCrack - CurTime() )
+        surface.SetFont( "KeypadCrackNumbers" )
+        surface.SetTextPos( fontx - 90, fonty + 110 )
+        surface.SetTextColor( color_black )
+        surface.DrawText( timeLeft .. " seconds left" )
+        surface.SetTextPos( fontx - 90, fonty + 110 )
+        surface.SetTextColor( color_white )
+        surface.DrawText( timeLeft .. " seconds left" )
+
+        cam.End3D2D()
     end
 
     SWEP.DownAngle = Angle( -10, 0, 0 )
