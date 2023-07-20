@@ -1,3 +1,10 @@
+local render_SetMaterial = render.SetMaterial
+local render_DrawBox = render.DrawBox
+local cam_Start3D2D = cam.Start3D2D
+local color_white = color_white
+local cam_End3D2D = cam.End3D2D
+local LocalPlayer = LocalPlayer
+
 surface.CreateFont( "KeypadAbort", {
     font = "Roboto",
     size = 45,
@@ -30,6 +37,11 @@ surface.CreateFont( "KeypadStatus", {
 
 local COLOR_GREEN = Color( 0, 255, 0 )
 local COLOR_RED = Color( 255, 0, 0 )
+
+local mat = CreateMaterial( "willox_keypad_material", "VertexLitGeneric", {
+    ["$basetexture"] = "white",
+    ["$color"] = "{ 36 36 36 }",
+} )
 
 local function DrawLines( lines, x, y )
     local text = table.concat( lines, "\n" )
@@ -176,4 +188,22 @@ function ENT:GetHoveredElement()
         local element_h = h * element.h
         if element_x < x and element_x + element_w > x and element_y < y and element_y + element_h > y then return element end
     end
+end
+
+function ENT:Draw()
+    local entTable = self:GetTable()
+    local selfPos = self:GetPos()
+
+    render_SetMaterial( mat )
+    render_DrawBox( selfPos, self:GetAngles(), entTable.Mins, entTable.Maxs, color_white, true )
+
+    if selfPos:DistToSqr( LocalPlayer():GetPos() ) > 262144 then return end
+
+    local pos, ang = self:CalculateRenderPos(), self:CalculateRenderAng()
+    local w, h = entTable.Width2D, entTable.Height2D
+    local x, y = self:CalculateCursorPos()
+
+    cam_Start3D2D( pos, ang, entTable.Scale )
+    self:Paint( w, h, x, y )
+    cam_End3D2D()
 end

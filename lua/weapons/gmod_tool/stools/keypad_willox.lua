@@ -5,7 +5,7 @@ end
 TOOL.Category = "Construction"
 TOOL.Name = "Keypad"
 TOOL.Command = nil
-TOOL.ClientConVar["weld"] = "1"
+TOOL.ClientConVar["weld"] = "0"
 TOOL.ClientConVar["freeze"] = "1"
 TOOL.ClientConVar["password"] = "1234"
 TOOL.ClientConVar["secure"] = "0"
