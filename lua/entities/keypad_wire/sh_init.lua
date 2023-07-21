@@ -15,7 +15,10 @@ ENT.Status_Denied = 2
 ENT.Command_Enter = 0
 ENT.Command_Accept = 1
 ENT.Command_Abort = 2
+ENT.Command_ID = 3
 ENT.IsKeypad = true
+ENT.AllowedPlayers = {}
+
 AccessorFunc( ENT, "m_Password", "Password", FORCE_STRING )
 
 function ENT:Initialize()

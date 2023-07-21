@@ -21,14 +21,37 @@ net.Receive( "Keypad", function( _, ply )
             ent:SetValue( tostring( val ) )
             ent:EmitSound( "buttons/button15.wav" )
         end
-    elseif command == ent.Command_Abort then
+        return
+    end
+
+    if command == ent.Command_Abort then
         ent:SetValue( "" )
-    elseif command == ent.Command_Accept then
+        return
+    end
+
+    if command == ent.Command_Accept then
         if ent:GetValue() == ent:GetPassword() then
             ent:Process( true )
         else
             ent:Process( false )
         end
+
+        return
+    end
+
+    if command == ent.Command_ID then
+        if ent:GetKeypadOwner() == ply then
+            ent:Process( true )
+            return
+        end
+
+        local steamid = ply:SteamID()
+        if ent.AllowedPlayers[steamid] then
+            ent:Process( true )
+            return
+        end
+
+        ent:Process( false )
     end
 end )
 

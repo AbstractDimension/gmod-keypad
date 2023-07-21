@@ -37,7 +37,9 @@ surface.CreateFont( "KeypadStatus", {
 
 local COLOR_GREEN = Color( 0, 255, 0 )
 local COLOR_RED = Color( 255, 0, 0 )
+local COG_COLOR = Color( 150, 150, 150 )
 
+local cogMat = Material( "icon16/cog.png", "smooth mips" )
 local mat = CreateMaterial( "willox_keypad_material", "VertexLitGeneric", {
     ["$basetexture"] = "white",
     ["$color"] = "{ 36 36 36 }",
@@ -97,20 +99,33 @@ local elements = {
     {
         x = 0.075,
         y = 0.04 + 0.25 + 0.03,
-        w = 0.85 / 2 - 0.04 / 2 + 0.05,
+        w = 0.25,
         h = 0.125,
         color = Color( 120, 25, 25 ),
         hovercolor = Color( 180, 25, 25 ),
-        text = "ABORT",
+        text = "DEL",
         font = "KeypadAbort",
         click = function( self )
             self:SendCommand( self.Command_Abort )
         end
     }, -- ABORT
     {
-        x = 0.5 + 0.04 / 2 + 0.05,
+        x = 0.075 + 0.3,
         y = 0.04 + 0.25 + 0.03,
-        w = 0.85 / 2 - 0.04 / 2 - 0.05,
+        w = 0.25,
+        h = 0.125,
+        color = Color( 25, 27, 120 ),
+        hovercolor = Color( 25, 123, 180 ),
+        text = "ID",
+        font = "KeypadOK",
+        click = function( self )
+            self:SendCommand( self.Command_ID )
+        end
+    }, -- ID
+    {
+        x = 0.075 + 0.3 * 2,
+        y = 0.04 + 0.25 + 0.03,
+        w = 0.25,
         h = 0.125,
         color = Color( 25, 120, 25 ),
         hovercolor = Color( 25, 180, 25 ),
@@ -119,7 +134,32 @@ local elements = {
         click = function( self )
             self:SendCommand( self.Command_Accept )
         end
-    } -- OK
+    }, -- OK
+    {
+        x = 0.828,
+        y = 0.04,
+        w = 0.0962,
+        h = 0.05,
+        -- grey
+        color = Color( 60, 60, 60 ),
+        hovercolor = Color( 80, 80, 80 ),
+        text = "",
+        font = "KeypadOK",
+        click = function()
+            LocalPlayer():ConCommand( "keypad_config" )
+        end,
+        render = function( _, x, y )
+            render.PushFilterMag( TEXFILTER.POINT )
+            render.PushFilterMin( TEXFILTER.POINT )
+
+            surface.SetDrawColor( COG_COLOR )
+            surface.SetMaterial( cogMat )
+            surface.DrawTexturedRect( x - 11, y - 11, 22, 22 )
+
+            render.PopFilterMag()
+            render.PopFilterMin()
+        end
+    } -- Config
 }
 
 -- Create numbers
@@ -181,7 +221,9 @@ function ENT:GetHoveredElement()
     local w, h = self.Width2D, self.Height2D
     local x, y = self:CalculateCursorPos()
 
-    for _, element in ipairs( elements ) do
+    -- reverse ipairs
+    for i = #elements, 1, -1 do
+        local element = elements[i]
         local element_x = w * element.x
         local element_y = h * element.y
         local element_w = w * element.w

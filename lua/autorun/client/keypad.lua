@@ -64,3 +64,78 @@ hook.Add( "CreateMove", "Keypad", function()
         end
     end
 end )
+
+concommand.Add( "keypad_config", function( lply )
+    local ent = lply:GetEyeTrace().Entity
+    if not IsValid( ent ) or not ent.IsKeypad then return end
+
+    ent.AllowedPlayers = ent.AllowedPlayers or {}
+
+    local frame = vgui.Create( "DFrame" )
+    frame:SetSize( 300, 400 )
+    frame:Center()
+    frame:SetTitle( "Keypad Config" )
+    frame:MakePopup()
+
+    -- List of all players and if they're allowed or not
+    local scroll = vgui.Create( "DScrollPanel", frame )
+    scroll:Dock( FILL )
+
+    local listLayout = vgui.Create( "DListLayout", scroll )
+    listLayout:Dock( FILL )
+
+    local function addPlayer( ply, allowed )
+        local panel = vgui.Create( "DPanel", listLayout )
+        panel:SetTall( 20 )
+        panel:Dock( TOP )
+        panel:DockMargin( 0, 0, 0, 4 )
+        function panel:Paint( w, h )
+            draw.RoundedBox( 0, 0, 0, w, h, Color( 100, 100, 100 ) )
+        end
+
+        local checkbox = vgui.Create( "DCheckBox", panel )
+        checkbox:Dock( LEFT )
+        checkbox:SetWide( 20 )
+        checkbox:SetTall( 20 )
+        checkbox:SetValue( allowed )
+        function checkbox:Paint( w, h )
+            -- outlines for the checkbox
+            draw.RoundedBox( 10, 0, 0, w, h, Color( 0, 0, 0 ) )
+            if self:GetChecked() then
+                draw.RoundedBox( 10, 2, 2, w - 4, h - 4, Color( 0, 255, 0 ) )
+            else
+                draw.RoundedBox( 10, 2, 2, w - 4, h - 4, Color( 255, 0, 0 ) )
+            end
+        end
+
+        function checkbox:OnChange( val )
+            local id = ply:SteamID()
+            if ply:IsBot() then
+                id = ply:EntIndex()
+            end
+            ent.AllowedPlayers[id] = val
+        end
+
+        local label = vgui.Create( "DLabel", panel )
+        label:Dock( FILL )
+        label:DockMargin( 5, 0, 0, 0 )
+        label:SetText( ply:Nick() )
+        label:SetTextColor( Color( 255, 255, 255 ) )
+    end
+
+    for _, ply in ipairs( player.GetAll() ) do
+        if ply ~= lply then
+            addPlayer( ply, ent.AllowedPlayers[ply:SteamID()] )
+        end
+    end
+
+    local button = vgui.Create( "DButton", frame )
+    button:Dock( BOTTOM )
+    button:SetText( "Save" )
+    function button:DoClick()
+        net.Start( "KeypadConfig" )
+            net.WriteEntity( ent )
+            net.WriteTable( ent.AllowedPlayers )
+        net.SendToServer()
+    end
+end )
