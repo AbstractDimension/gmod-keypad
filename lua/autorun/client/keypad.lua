@@ -92,6 +92,7 @@ concommand.Add( "keypad_config", function( lply )
         function panel:Paint( w, h )
             draw.RoundedBox( 0, 0, 0, w, h, Color( 100, 100, 100 ) )
         end
+        panel.playerName = string.lower( ply:Nick() )
 
         local checkbox = vgui.Create( "DCheckBox", panel )
         checkbox:Dock( LEFT )
@@ -124,7 +125,7 @@ concommand.Add( "keypad_config", function( lply )
     end
 
     for _, ply in ipairs( player.GetAll() ) do
-        if ply ~= lply then
+        if ply ~= lply and not ply:IsBot() then
             addPlayer( ply, ent.AllowedPlayers[ply:SteamID()] )
         end
     end
@@ -137,5 +138,25 @@ concommand.Add( "keypad_config", function( lply )
             net.WriteEntity( ent )
             net.WriteTable( ent.AllowedPlayers )
         net.SendToServer()
+    end
+
+    -- Searchbar
+    local search = vgui.Create( "DTextEntry", frame )
+    search:Dock( TOP )
+    search:DockMargin( 0, 0, 0, 4 )
+    search:SetPlaceholderText( "Search..." )
+
+    function search:OnChange()
+        local val = self:GetValue()
+        for _, panel in ipairs( listLayout:GetChildren() ) do
+            local name = panel.playerName
+
+            if string.find( name, string.lower( val ), nil, true ) then
+                panel:SetVisible( true )
+            else
+                panel:SetVisible( false )
+            end
+        end
+        listLayout:InvalidateLayout()
     end
 end )
