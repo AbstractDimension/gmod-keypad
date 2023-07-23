@@ -158,6 +158,9 @@ local elements = {
 
             render.PopFilterMag()
             render.PopFilterMin()
+        end,
+        condition = function( self )
+            return self:GetKeypadOwner() == LocalPlayer()
         end
     } -- Config
 }
@@ -189,6 +192,10 @@ function ENT:Paint( w, h )
     local hovered = self:GetHoveredElement()
 
     for _, element in ipairs( elements ) do
+        if element.condition and not element.condition( self ) then
+            continue
+        end
+
         surface.SetDrawColor( element.color )
         local element_x = w * element.x
         local element_y = h * element.y

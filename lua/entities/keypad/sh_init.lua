@@ -15,7 +15,6 @@ ENT.IsKeypad = true
 ENT.AllowedPlayers = {}
 
 AccessorFunc( ENT, "m_Password", "Password", FORCE_STRING )
-AccessorFunc( ENT, "m_KeypadOwner", "KeypadOwner" )
 
 function ENT:Initialize()
     self:SetModel( self.Model )
@@ -47,4 +46,5 @@ function ENT:SetupDataTables()
     self:NetworkVar( "String", 0, "Text" )
     self:NetworkVar( "Int", 0, "KeypadStatus" )
     self:NetworkVar( "Bool", 0, "Secure" )
+    self:NetworkVar( "Entity", 0, "KeypadOwner" )
 end

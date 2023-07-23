@@ -68,6 +68,7 @@ end )
 concommand.Add( "keypad_config", function( lply )
     local ent = lply:GetEyeTrace().Entity
     if not IsValid( ent ) or not ent.IsKeypad then return end
+    if lply ~= ent:GetKeypadOwner() then return end
 
     ent.AllowedPlayers = ent.AllowedPlayers or {}
 

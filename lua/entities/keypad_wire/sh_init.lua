@@ -58,4 +58,5 @@ function ENT:SetupDataTables()
     self:NetworkVar( "String", 0, "Text" )
     self:NetworkVar( "Int", 0, "KeypadStatus" )
     self:NetworkVar( "Bool", 0, "Secure" )
+    self:NetworkVar( "Entity", 0, "KeypadOwner" )
 end
