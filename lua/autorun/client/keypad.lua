@@ -126,7 +126,7 @@ concommand.Add( "keypad_config", function( lply )
     end
 
     for _, ply in ipairs( player.GetAll() ) do
-        if ply ~= lply and not ply:IsBot() then
+        if ply ~= lply then
             addPlayer( ply, ent.AllowedPlayers[ply:SteamID()] )
         end
     end
@@ -139,6 +139,7 @@ concommand.Add( "keypad_config", function( lply )
             net.WriteEntity( ent )
             net.WriteTable( ent.AllowedPlayers )
         net.SendToServer()
+        frame:Close()
     end
 
     -- Searchbar
