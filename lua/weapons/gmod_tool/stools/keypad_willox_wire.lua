@@ -47,6 +47,7 @@ function TOOL:SetupKeypad( ent, pass )
         Secure = tobool( self:GetClientNumber( "secure" ) )
     }
 
+    ent:SetKeypadOwner( self:GetOwner() )
     ent:SetData( data )
 end
 
