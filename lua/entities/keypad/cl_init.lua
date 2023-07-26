@@ -33,7 +33,7 @@ function ENT:Draw()
 end
 
 function ENT:SendCommand( command, data )
-    net.Start( "Keypad" )
+    net.Start( "Keypad_Command" )
     net.WriteEntity( self )
     net.WriteUInt( command, 4 )
 

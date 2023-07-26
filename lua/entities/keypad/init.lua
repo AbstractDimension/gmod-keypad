@@ -3,57 +3,6 @@ AddCSLuaFile( "cl_maths.lua" )
 AddCSLuaFile( "cl_panel.lua" )
 AddCSLuaFile( "sh_init.lua" )
 include( "sh_init.lua" )
-util.AddNetworkString( "Keypad" )
-
-net.Receive( "Keypad", function( _, ply )
-    local ent = net.ReadEntity()
-    if not IsValid( ply ) or not IsValid( ent ) or ent:GetClass():lower() ~= "keypad" then return end
-    if ent:GetKeypadStatus() ~= ent.Status_None then return end
-    if ply:EyePos():Distance( ent:GetPos() ) >= 120 then return end
-    if ent.Next_Command_Time and ent.Next_Command_Time > CurTime() then return end
-    ent.Next_Command_Time = CurTime() + 0.05
-    local command = net.ReadUInt( 4 )
-
-    if command == ent.Command_Enter then
-        local val = tonumber( ent:GetValue() .. net.ReadUInt( 8 ) )
-
-        if val and val > 0 and val <= 9999 then
-            ent:SetValue( tostring( val ) )
-            ent:EmitSound( "buttons/button15.wav" )
-        end
-        return
-    end
-
-    if command == ent.Command_Abort then
-        ent:SetValue( "" )
-        return
-    end
-
-    if command == ent.Command_Accept then
-        if ent:GetValue() == ent:GetPassword() then
-            ent:Process( true )
-        else
-            ent:Process( false )
-        end
-
-        return
-    end
-
-    if command == ent.Command_ID then
-        if ent:GetKeypadOwner() == ply then
-            ent:Process( true )
-            return
-        end
-
-        local steamid = ply:SteamID()
-        if ent.AllowedPlayers[steamid] then
-            ent:Process( true )
-            return
-        end
-
-        ent:Process( false )
-    end
-end )
 
 function ENT:SetValue( val )
     self.Value = val
