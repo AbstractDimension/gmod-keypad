@@ -146,7 +146,6 @@ concommand.Add( "keypad_config", function( lply )
         ent.AllowedPlayers = frame.AllowedPlayersCache
 
         for _, keypad in ipairs( ents.FindByClass( "keypad*" ) ) do
-            print( keypad, keypad.IsKeypad, lply, keypad:GetKeypadOwner() )
             if IsValid( keypad ) and keypad.IsKeypad and lply == keypad:GetKeypadOwner() then
                 keypad.AllowedPlayers = frame.AllowedPlayersCache
             end
