@@ -77,6 +77,7 @@ concommand.Add( "keypad_config", function( lply )
     frame:Center()
     frame:SetTitle( "Keypad Config" )
     frame:MakePopup()
+    frame.AllowedPlayersCache = table.Copy( ent.AllowedPlayers )
 
     -- List of all players and if they're allowed or not
     local scroll = vgui.Create( "DScrollPanel", frame )
@@ -115,7 +116,7 @@ concommand.Add( "keypad_config", function( lply )
             if ply:IsBot() then
                 id = ply:EntIndex()
             end
-            ent.AllowedPlayers[id] = val
+            frame.AllowedPlayersCache[id] = val
         end
 
         local label = vgui.Create( "DLabel", panel )
@@ -127,18 +128,43 @@ concommand.Add( "keypad_config", function( lply )
 
     for _, ply in ipairs( player.GetAll() ) do
         if ply ~= lply then
-            addPlayer( ply, ent.AllowedPlayers[ply:SteamID()] )
+            if ply:IsBot() then
+                addPlayer( ply, ent.AllowedPlayers[ply:EntIndex()] )
+            else
+                addPlayer( ply, ent.AllowedPlayers[ply:SteamID()] )
+            end
         end
+    end
+
+    local buttonAll = vgui.Create( "DButton", frame )
+    buttonAll:Dock( BOTTOM )
+    buttonAll:SetText( "Apply to all keypads" )
+    function buttonAll:DoClick()
+        net.Start( "KeypadConfigAll" )
+            net.WriteTable( ent.AllowedPlayers )
+        net.SendToServer()
+        ent.AllowedPlayers = frame.AllowedPlayersCache
+
+        for _, keypad in ipairs( ents.FindByClass( "keypad*" ) ) do
+            print( keypad, keypad.IsKeypad, lply, keypad:GetKeypadOwner() )
+            if IsValid( keypad ) and keypad.IsKeypad and lply == keypad:GetKeypadOwner() then
+                keypad.AllowedPlayers = frame.AllowedPlayersCache
+            end
+        end
+
+        frame:Close()
     end
 
     local button = vgui.Create( "DButton", frame )
     button:Dock( BOTTOM )
-    button:SetText( "Save" )
+    button:SetText( "Apply" )
     function button:DoClick()
         net.Start( "KeypadConfig" )
             net.WriteEntity( ent )
             net.WriteTable( ent.AllowedPlayers )
         net.SendToServer()
+        ent.AllowedPlayers = frame.AllowedPlayersCache
+
         frame:Close()
     end
 
