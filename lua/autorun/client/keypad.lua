@@ -140,10 +140,11 @@ concommand.Add( "keypad_config", function( lply )
     buttonAll:Dock( BOTTOM )
     buttonAll:SetText( "Apply to all keypads" )
     function buttonAll:DoClick()
-        net.Start( "KeypadConfigAll" )
-            net.WriteTable( ent.AllowedPlayers )
-        net.SendToServer()
         ent.AllowedPlayers = frame.AllowedPlayersCache
+
+        net.Start( "KeypadConfigAll" )
+        net.WriteTable( ent.AllowedPlayersCache )
+        net.SendToServer()
 
         for _, keypad in ipairs( ents.FindByClass( "keypad*" ) ) do
             if IsValid( keypad ) and keypad.IsKeypad and lply == keypad:GetKeypadOwner() then
@@ -158,11 +159,12 @@ concommand.Add( "keypad_config", function( lply )
     button:Dock( BOTTOM )
     button:SetText( "Apply" )
     function button:DoClick()
-        net.Start( "KeypadConfig" )
-            net.WriteEntity( ent )
-            net.WriteTable( ent.AllowedPlayers )
-        net.SendToServer()
         ent.AllowedPlayers = frame.AllowedPlayersCache
+
+        net.Start( "KeypadConfig" )
+        net.WriteEntity( ent )
+        net.WriteTable( ent.AllowedPlayers )
+        net.SendToServer()
 
         frame:Close()
     end
