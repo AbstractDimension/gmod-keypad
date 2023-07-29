@@ -143,7 +143,7 @@ concommand.Add( "keypad_config", function( lply )
         ent.AllowedPlayers = frame.AllowedPlayersCache
 
         net.Start( "KeypadConfigAll" )
-        net.WriteTable( ent.AllowedPlayersCache )
+        net.WriteTable( ent.AllowedPlayers )
         net.SendToServer()
 
         for _, keypad in ipairs( ents.FindByClass( "keypad*" ) ) do
