@@ -1,10 +1,22 @@
+util.AddNetworkString( "KeypadOpenConfig" )
 util.AddNetworkString( "KeypadConfig" )
 util.AddNetworkString( "KeypadConfigAll" )
+util.AddNetworkString( "Keypad_Command" )
 
 CreateConVar( "keypad_min_granted_hold_lenght", 5, { FCVAR_ARCHIVE }, "Minimum time a keypad will stay open when its opened.", 0 )
 CreateConVar( "keypad_max_granted_initial_lenght", 3, { FCVAR_ARCHIVE }, "Maximum time a keypad will wait to open after its granted.", 0 )
 
-util.AddNetworkString( "Keypad_Command" )
+net.Receive( "KeypadOpenConfig", function( _, ply )
+    local keypad = net.ReadEntity()
+    if not IsValid( keypad ) or not keypad.IsKeypad then return end
+
+    if ply ~= keypad:GetKeypadOwner() then return end
+
+    net.Start( "KeypadOpenConfig" )
+        net.WriteEntity( keypad )
+        net.WriteTable( keypad.AllowedPlayers )
+    net.Send( ply )
+end )
 
 net.Receive( "Keypad_Command", function( _, ply )
     local ent = net.ReadEntity()
@@ -62,6 +74,24 @@ net.Receive( "Keypad_Command", function( _, ply )
     end
 end )
 
+local function validateConfigTable( tbl )
+    local config = {}
+    local plyCount = game.MaxPlayers()
+    local count = 0
+
+    for steamid, bool in pairs( tbl ) do
+        count = count + 1
+        if count > plyCount then break end
+
+        local idPly = player.GetBySteamID( steamid ) or player.GetByID( tonumber( steamid ) )
+        if IsValid( idPly ) then
+            config[steamid] = bool
+        end
+    end
+
+    return config
+end
+
 net.Receive( "KeypadConfig", function( _, ply )
     local keypad = net.ReadEntity()
     local config = net.ReadTable()
@@ -69,42 +99,17 @@ net.Receive( "KeypadConfig", function( _, ply )
     if not IsValid( keypad ) or not keypad.IsKeypad then return end
     if ply ~= keypad:GetKeypadOwner() then return end
 
-    keypad.AllowedPlayers = keypad.AllowedPlayers or {}
-
-    local plyCount = game.MaxPlayers()
-    local count = 0
-
-    for steamid, bool in pairs( config ) do
-        count = count + 1
-        if count > plyCount then break end
-
-        local idPly = player.GetBySteamID( steamid )
-        if IsValid( idPly ) then
-            keypad.AllowedPlayers[steamid] = bool
-        end
-    end
+    local allowedPlayers = validateConfigTable( config )
+    keypad.AllowedPlayers = allowedPlayers
 end )
 
 net.Receive( "KeypadConfigAll", function( _, ply )
     ply.KeypadConfigAllCooldown = ply.KeypadConfigAllCooldown or 0
     if ply.KeypadConfigAllCooldown > CurTime() then return end
-    ply.KeypadConfigAllCooldown = CurTime() + 0.5
+    ply.KeypadConfigAllCooldown = CurTime() + 0.25
 
     local config = net.ReadTable()
-    local allowedPlayers = {}
-
-    local plyCount = game.MaxPlayers()
-    local count = 0
-
-    for steamid, bool in pairs( config ) do
-        count = count + 1
-        if count > plyCount then break end
-
-        local idPly = player.GetBySteamID( steamid )
-        if IsValid( idPly ) then
-            allowedPlayers[steamid] = bool
-        end
-    end
+    local allowedPlayers = validateConfigTable( config )
 
     for _, keypad in ipairs( ents.FindByClass( "keypad*" ) ) do
         if IsValid( keypad ) and keypad.IsKeypad and ply == keypad:GetKeypadOwner() then

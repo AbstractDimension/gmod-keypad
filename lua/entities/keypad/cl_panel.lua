@@ -145,8 +145,10 @@ local elements = {
         hovercolor = Color( 80, 80, 80 ),
         text = "",
         font = "KeypadOK",
-        click = function()
-            LocalPlayer():ConCommand( "keypad_config" )
+        click = function( self )
+            net.Start( "KeypadOpenConfig" )
+            net.WriteEntity( self )
+            net.SendToServer()
         end,
         render = function( _, x, y )
             render.PushFilterMag( TEXFILTER.POINT )

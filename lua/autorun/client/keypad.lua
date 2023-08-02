@@ -65,19 +65,17 @@ hook.Add( "CreateMove", "Keypad", function()
     end
 end )
 
-concommand.Add( "keypad_config", function( lply )
-    local ent = lply:GetEyeTrace().Entity
-    if not IsValid( ent ) or not ent.IsKeypad then return end
-    if lply ~= ent:GetKeypadOwner() then return end
+net.Receive( "KeypadOpenConfig", function()
+    local ent = net.ReadEntity()
+    local playerConfigs = net.ReadTable()
 
-    ent.AllowedPlayers = ent.AllowedPlayers or {}
+    if not IsValid( ent ) or not ent.IsKeypad then return end
 
     local frame = vgui.Create( "DFrame" )
     frame:SetSize( 300, 400 )
     frame:Center()
     frame:SetTitle( "Keypad Config" )
     frame:MakePopup()
-    frame.AllowedPlayersCache = table.Copy( ent.AllowedPlayers )
 
     -- List of all players and if they're allowed or not
     local scroll = vgui.Create( "DScrollPanel", frame )
@@ -116,7 +114,8 @@ concommand.Add( "keypad_config", function( lply )
             if ply:IsBot() then
                 id = ply:EntIndex()
             end
-            frame.AllowedPlayersCache[id] = val
+
+            playerConfigs[id] = val
         end
 
         local label = vgui.Create( "DLabel", panel )
@@ -126,31 +125,13 @@ concommand.Add( "keypad_config", function( lply )
         label:SetTextColor( Color( 255, 255, 255 ) )
     end
 
-    for _, ply in ipairs( player.GetAll() ) do
-        if ply ~= lply then
-            if ply:IsBot() then
-                addPlayer( ply, ent.AllowedPlayers[ply:EntIndex()] )
-            else
-                addPlayer( ply, ent.AllowedPlayers[ply:SteamID()] )
-            end
-        end
-    end
-
     local buttonAll = vgui.Create( "DButton", frame )
     buttonAll:Dock( BOTTOM )
     buttonAll:SetText( "Apply to all keypads" )
     function buttonAll:DoClick()
-        ent.AllowedPlayers = frame.AllowedPlayersCache
-
         net.Start( "KeypadConfigAll" )
-        net.WriteTable( ent.AllowedPlayers )
+        net.WriteTable( playerConfigs )
         net.SendToServer()
-
-        for _, keypad in ipairs( ents.FindByClass( "keypad*" ) ) do
-            if IsValid( keypad ) and keypad.IsKeypad and lply == keypad:GetKeypadOwner() then
-                keypad.AllowedPlayers = frame.AllowedPlayersCache
-            end
-        end
 
         frame:Close()
     end
@@ -159,11 +140,9 @@ concommand.Add( "keypad_config", function( lply )
     button:Dock( BOTTOM )
     button:SetText( "Apply" )
     function button:DoClick()
-        ent.AllowedPlayers = frame.AllowedPlayersCache
-
         net.Start( "KeypadConfig" )
         net.WriteEntity( ent )
-        net.WriteTable( ent.AllowedPlayers )
+        net.WriteTable( playerConfigs )
         net.SendToServer()
 
         frame:Close()
@@ -176,16 +155,45 @@ concommand.Add( "keypad_config", function( lply )
     search:SetPlaceholderText( "Search..." )
 
     function search:OnChange()
-        local val = self:GetValue()
+        local val = string.lower( self:GetValue() )
+        if val == "" then
+            for _, panel in ipairs( listLayout:GetChildren() ) do
+                panel:SetVisible( true )
+            end
+            listLayout:InvalidateLayout()
+            return
+        end
+
         for _, panel in ipairs( listLayout:GetChildren() ) do
             local name = panel.playerName
 
-            if string.find( name, string.lower( val ), nil, true ) then
+            if string.find( name, val, nil, true ) then
                 panel:SetVisible( true )
             else
                 panel:SetVisible( false )
             end
         end
         listLayout:InvalidateLayout()
+    end
+
+    -- Add all players
+    local sortedConfig = {}
+
+    for _, ply in ipairs( player.GetAll() ) do
+        if ply ~= LocalPlayer() then
+            local id = ply:SteamID()
+            if ply:IsBot() then
+                id = ply:EntIndex()
+            end
+            if playerConfigs[id] then
+                table.insert( sortedConfig, 1, { ply = ply, allowed = true } )
+            else
+                table.insert( sortedConfig, { ply = ply, allowed = false } )
+            end
+        end
+    end
+
+    for _, data in ipairs( sortedConfig ) do
+        addPlayer( data.ply, data.allowed )
     end
 end )
