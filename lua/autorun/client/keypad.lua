@@ -93,11 +93,13 @@ net.Receive( "KeypadOpenConfig", function()
     end
 
     -- List of all players and if they're allowed or not
+    local scrollbarDrawing = false
     local scroll = vgui.Create( "DScrollPanel", frame )
     scroll:Dock( FILL )
     function scroll:PaintOver( w, h )
-        -- Separator
+        if not scrollbarDrawing then return end
         draw.RoundedBox( 0, w - 16, 0, 2, h, backColor )
+        scrollbarDrawing = false
     end
 
     local bar = scroll:GetVBar()
@@ -108,8 +110,8 @@ net.Receive( "KeypadOpenConfig", function()
 
     local grip = bar.btnGrip
     function grip:Paint( w, h )
-        draw.RoundedBox( 0, w - 20, 0, 5, h, Color( 255, 0, 0 ) )
         draw.RoundedBox( 0, 0, 0, w, h, frontColor )
+        scrollbarDrawing = true
     end
 
     local listLayout = vgui.Create( "DListLayout", scroll )
