@@ -1,3 +1,13 @@
+local backColor = Color( 40, 40, 40 )
+local frontColor = Color( 60, 60, 60 )
+local buttonColor = Color( 50, 50, 50 )
+local buttonHoverColor = Color( 80, 80, 80 )
+local textColor = Color( 255, 255, 255 )
+local green = Color( 0, 255, 0 )
+local darkGreen = Color( 0, 200, 0 )
+local red = Color( 255, 0, 0 )
+local darkRed = Color( 200, 0, 0 )
+
 hook.Add( "PlayerBindPress", "Keypad", function( ply, bind, pressed )
     if not pressed then return end
 
@@ -76,10 +86,31 @@ net.Receive( "KeypadOpenConfig", function()
     frame:Center()
     frame:SetTitle( "Keypad Config" )
     frame:MakePopup()
+    function frame:Paint( w, h )
+        draw.RoundedBox( 0, 0, 0, w, h, backColor )
+
+        draw.RoundedBox( 0, 0, 0, w, 25, frontColor )
+    end
 
     -- List of all players and if they're allowed or not
     local scroll = vgui.Create( "DScrollPanel", frame )
     scroll:Dock( FILL )
+    function scroll:PaintOver( w, h )
+        -- Separator
+        draw.RoundedBox( 0, w - 16, 0, 2, h, backColor )
+    end
+
+    local bar = scroll:GetVBar()
+    bar:SetHideButtons( true )
+    function bar:Paint( w, h )
+        draw.RoundedBox( 0, 0, 0, w, h, buttonColor )
+    end
+
+    local grip = bar.btnGrip
+    function grip:Paint( w, h )
+        draw.RoundedBox( 0, w - 20, 0, 5, h, Color( 255, 0, 0 ) )
+        draw.RoundedBox( 0, 0, 0, w, h, frontColor )
+    end
 
     local listLayout = vgui.Create( "DListLayout", scroll )
     listLayout:Dock( FILL )
@@ -90,7 +121,7 @@ net.Receive( "KeypadOpenConfig", function()
         panel:Dock( TOP )
         panel:DockMargin( 0, 0, 0, 4 )
         function panel:Paint( w, h )
-            draw.RoundedBox( 0, 0, 0, w, h, Color( 100, 100, 100 ) )
+            draw.RoundedBox( 0, 0, 0, w, h, buttonColor )
         end
         panel.playerName = string.lower( ply:Nick() )
 
@@ -101,11 +132,20 @@ net.Receive( "KeypadOpenConfig", function()
         checkbox:SetValue( allowed )
         function checkbox:Paint( w, h )
             -- outlines for the checkbox
-            draw.RoundedBox( 10, 0, 0, w, h, Color( 0, 0, 0 ) )
+            draw.RoundedBox( 0, 0, 0, w, h, buttonColor )
+            local isHovered = self:IsHovered()
             if self:GetChecked() then
-                draw.RoundedBox( 10, 2, 2, w - 4, h - 4, Color( 0, 255, 0 ) )
+                if isHovered then
+                    draw.RoundedBox( 3, 2, 2, w - 4, h - 4, darkGreen )
+                else
+                    draw.RoundedBox( 3, 2, 2, w - 4, h - 4, green )
+                end
             else
-                draw.RoundedBox( 10, 2, 2, w - 4, h - 4, Color( 255, 0, 0 ) )
+                if isHovered then
+                    draw.RoundedBox( 3, 2, 2, w - 4, h - 4, darkRed )
+                else
+                    draw.RoundedBox( 3, 2, 2, w - 4, h - 4, red )
+                end
             end
         end
 
@@ -122,12 +162,13 @@ net.Receive( "KeypadOpenConfig", function()
         label:Dock( FILL )
         label:DockMargin( 5, 0, 0, 0 )
         label:SetText( ply:Nick() )
-        label:SetTextColor( Color( 255, 255, 255 ) )
+        label:SetTextColor( textColor )
     end
 
     local buttonAll = vgui.Create( "DButton", frame )
     buttonAll:Dock( BOTTOM )
     buttonAll:SetText( "Apply to all keypads" )
+    buttonAll:SetTextColor( textColor )
     function buttonAll:DoClick()
         net.Start( "KeypadConfigAll" )
         net.WriteTable( playerConfigs )
@@ -135,11 +176,20 @@ net.Receive( "KeypadOpenConfig", function()
 
         frame:Close()
     end
+    function buttonAll:Paint( w, h )
+        draw.RoundedBox( 0, 0, 0, w, h, backColor )
+        if self:IsHovered() then
+            draw.RoundedBox( 0, 0, 2, w, h - 2, buttonHoverColor )
+            return
+        end
+        draw.RoundedBox( 0, 0, 2, w, h - 2, frontColor )
+    end
 
-    local button = vgui.Create( "DButton", frame )
-    button:Dock( BOTTOM )
-    button:SetText( "Apply" )
-    function button:DoClick()
+    local buttonApply = vgui.Create( "DButton", frame )
+    buttonApply:Dock( BOTTOM )
+    buttonApply:SetText( "Apply" )
+    buttonApply:SetTextColor( textColor )
+    function buttonApply:DoClick()
         net.Start( "KeypadConfig" )
         net.WriteEntity( ent )
         net.WriteTable( playerConfigs )
@@ -147,13 +197,22 @@ net.Receive( "KeypadOpenConfig", function()
 
         frame:Close()
     end
+    function buttonApply:Paint( w, h )
+        draw.RoundedBox( 0, 0, 0, w, h, backColor )
+        if self:IsHovered() then
+            draw.RoundedBox( 0, 0, 2, w, h - 2, buttonHoverColor )
+            return
+        end
+        draw.RoundedBox( 0, 0, 2, w, h - 2, frontColor )
+    end
 
     -- Searchbar
     local search = vgui.Create( "DTextEntry", frame )
     search:Dock( TOP )
     search:DockMargin( 0, 0, 0, 4 )
     search:SetPlaceholderText( "Search..." )
-
+    search:SetTextColor( textColor )
+    search:SetPaintBackground( false )
     function search:OnChange()
         local val = string.lower( self:GetValue() )
         if val == "" then
@@ -174,6 +233,13 @@ net.Receive( "KeypadOpenConfig", function()
             end
         end
         listLayout:InvalidateLayout()
+    end
+    function search:Paint( w, h )
+        draw.RoundedBox( 0, 0, 0, w, h, frontColor )
+        if self:GetValue() == "" then
+            draw.SimpleText( self:GetPlaceholderText(), "DermaDefault", 3, 3, textColor )
+        end
+        self:DrawTextEntryText( textColor, textColor, textColor )
     end
 
     -- Add all players
