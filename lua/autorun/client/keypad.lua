@@ -86,6 +86,7 @@ net.Receive( "KeypadOpenConfig", function()
     frame:Center()
     frame:SetTitle( "Keypad Config" )
     frame:MakePopup()
+    frame:SetKeyboardInputEnabled( false )
     function frame:Paint( w, h )
         draw.RoundedBox( 0, 0, 0, w, h, backColor )
 
