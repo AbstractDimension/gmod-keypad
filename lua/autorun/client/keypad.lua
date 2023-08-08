@@ -216,6 +216,14 @@ net.Receive( "KeypadOpenConfig", function()
     search:SetPlaceholderText( "Search..." )
     search:SetTextColor( textColor )
     search:SetPaintBackground( false )
+    function search:OnGetFocus()
+        frame:SetKeyboardInputEnabled( true )
+    end
+
+    function search:OnLoseFocus()
+        frame:SetKeyboardInputEnabled( false )
+    end
+
     function search:OnChange()
         local val = string.lower( self:GetValue() )
         if val == "" then
@@ -237,6 +245,7 @@ net.Receive( "KeypadOpenConfig", function()
         end
         listLayout:InvalidateLayout()
     end
+
     function search:Paint( w, h )
         draw.RoundedBox( 0, 0, 0, w, h, frontColor )
         if self:GetValue() == "" then
