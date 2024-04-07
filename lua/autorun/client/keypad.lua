@@ -231,6 +231,7 @@ net.Receive( "KeypadOpenConfig", function()
                 panel:SetVisible( true )
             end
             listLayout:InvalidateLayout( true )
+            scroll:InvalidateLayout( true )
             return
         end
 
@@ -244,6 +245,7 @@ net.Receive( "KeypadOpenConfig", function()
             end
         end
         listLayout:InvalidateLayout( true )
+        scroll:InvalidateLayout( true )
     end
 
     function search:Paint( w, h )
