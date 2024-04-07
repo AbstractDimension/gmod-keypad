@@ -230,7 +230,7 @@ net.Receive( "KeypadOpenConfig", function()
             for _, panel in ipairs( listLayout:GetChildren() ) do
                 panel:SetVisible( true )
             end
-            listLayout:InvalidateLayout()
+            listLayout:InvalidateLayout( true )
             return
         end
 
@@ -243,7 +243,7 @@ net.Receive( "KeypadOpenConfig", function()
                 panel:SetVisible( false )
             end
         end
-        listLayout:InvalidateLayout()
+        listLayout:InvalidateLayout( true )
     end
 
     function search:Paint( w, h )
