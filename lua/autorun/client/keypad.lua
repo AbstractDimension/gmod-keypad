@@ -78,6 +78,7 @@ end )
 net.Receive( "KeypadOpenConfig", function()
     local ent = net.ReadEntity()
     local playerConfigs = net.ReadTable()
+    local allowSquadMembers = net.ReadBool()
 
     if not IsValid( ent ) or not ent.IsKeypad then return end
 
@@ -175,6 +176,7 @@ net.Receive( "KeypadOpenConfig", function()
     function buttonAll:DoClick()
         net.Start( "KeypadConfigAll" )
         net.WriteTable( playerConfigs )
+        net.WriteBool( allowSquadMembers )
         net.SendToServer()
 
         frame:Close()
@@ -196,6 +198,7 @@ net.Receive( "KeypadOpenConfig", function()
         net.Start( "KeypadConfig" )
         net.WriteEntity( ent )
         net.WriteTable( playerConfigs )
+        net.WriteBool( allowSquadMembers )
         net.SendToServer()
 
         frame:Close()
@@ -207,6 +210,15 @@ net.Receive( "KeypadOpenConfig", function()
             return
         end
         draw.RoundedBox( 0, 0, 2, w, h - 2, frontColor )
+    end
+
+    local checkboxSquad = vgui.Create( "DCheckBoxLabel", frame )
+    checkboxSquad:Dock( BOTTOM )
+    checkboxSquad:SetText( "Authorize squad members" )
+    checkboxSquad:SetTextColor( textColor )
+    checkboxSquad:SetValue( allowSquadMembers )
+    function checkboxSquad:OnChange( val )
+        allowSquadMembers = val
     end
 
     -- Searchbar

@@ -15,6 +15,7 @@ net.Receive( "KeypadOpenConfig", function( _, ply )
     net.Start( "KeypadOpenConfig" )
         net.WriteEntity( keypad )
         net.WriteTable( keypad.AllowedPlayers )
+        net.WriteBool( keypad.AllowSquadMembers)
     net.Send( ply )
 end )
 
@@ -59,7 +60,9 @@ net.Receive( "Keypad_Command", function( _, ply )
     end
 
     if command == ent.Command_ID then
-        if ent:GetKeypadOwner() == ply then
+        local owner = ent:GetKeypadOwner()
+
+        if owner == ply then
             ent:Process( true )
             return
         end
@@ -68,6 +71,17 @@ net.Receive( "Keypad_Command", function( _, ply )
         if ent.AllowedPlayers[steamid] then
             ent:Process( true )
             return
+        end
+
+        local squadID = owner:GetSquadID()
+        if ent.AllowSquadMembers and squadID != -1 then
+            local members = SquadMenu:GetSquad(squadID).membersById
+            for memberID, _ in pairs(members) do
+                if memberID == ply:SteamID() then
+                    ent:Process( true )
+                    return
+                end
+            end
         end
 
         ent:Process( false )
@@ -95,12 +109,14 @@ end
 net.Receive( "KeypadConfig", function( _, ply )
     local keypad = net.ReadEntity()
     local config = net.ReadTable()
+    local allowSquadMembers = net.ReadBool()
 
     if not IsValid( keypad ) or not keypad.IsKeypad then return end
     if ply ~= keypad:GetKeypadOwner() then return end
 
     local allowedPlayers = validateConfigTable( config )
     keypad.AllowedPlayers = allowedPlayers
+    keypad.AllowSquadMembers = allowSquadMembers
 end )
 
 net.Receive( "KeypadConfigAll", function( _, ply )
@@ -110,10 +126,12 @@ net.Receive( "KeypadConfigAll", function( _, ply )
 
     local config = net.ReadTable()
     local allowedPlayers = validateConfigTable( config )
+    local allowSquadMembers = net.ReadBool()
 
     for _, keypad in ipairs( ents.FindByClass( "keypad*" ) ) do
         if IsValid( keypad ) and keypad.IsKeypad and ply == keypad:GetKeypadOwner() then
             keypad.AllowedPlayers = allowedPlayers
+            keypad.AllowSquadMembers = allowSquadMembers
         end
     end
 end )

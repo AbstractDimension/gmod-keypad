@@ -13,6 +13,7 @@ ENT.Command_Abort = 2
 ENT.Command_ID = 3
 ENT.IsKeypad = true
 ENT.AllowedPlayers = {}
+ENT.AllowSquadMembers = false
 
 AccessorFunc( ENT, "m_Password", "Password", FORCE_STRING )
 
